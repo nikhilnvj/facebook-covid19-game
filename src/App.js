@@ -29,15 +29,12 @@ class App extends React.Component {
 
         window.fbAsyncInit = async () => {
             window.FB.init({
-                appId: '241036760341476',
+                appId: '551766515485935',
                 autoLogAppEvents: true,
                 version: 'v6.0',
                 status: true
             });
             this.setState({fbApi: window.FB})
-            console.log(window.FB)
-
-            await window.FB.login(null, {scope: 'user_friends'})
 
             await new Promise((resolve, reject) => {
                 window.FB.getLoginStatus((response) => {
@@ -74,9 +71,13 @@ class App extends React.Component {
         const {showLoadingSpinner, nameStartsWithRandom} = this.state;
         let messagePart1 = 'Your friends whose names start with';
         let messagePart2 = 'will throw you a party after the COVID lockdown.';
-        let messageWithFriendName;
-        if (this.state.friends &&!messageWithFriendName && this.state.friends.length >= 10) {
-            messageWithFriendName = `${this.state.friends[Math.floor(Math.random() * this.state.friends.length)]} will throw you a party after the COVID lockdown.`;
+        let friendName;
+        if (this.state.friends && !friendName && this.state.friends.length >= 10) {
+            const [fName, , lName] = this.state.friends[Math.floor(Math.random() * this.state.friends.length)].split(" ");
+            friendName = fName;
+            if (lName) {
+                friendName += ` ${lName}`
+            }
         }
         return (
             <div className="App">
@@ -98,18 +99,19 @@ class App extends React.Component {
                                     <img src={player && player.getPhoto()} crossOrigin="anonymous" alt="profile-pic"/>
                                 </div>
                                 <div className="party-picture">
-                                    <img src='img/party.jpg' crossOrigin="anonymous" alt="profile-pic"/>
+                                    <img src='img/party.jpg' crossOrigin="anonymous" alt="party-pic"/>
                                 </div>
                             </div>
                             <div className="message-box">
                                 <div className="message-box--main">
-                                    {messageWithFriendName &&
+                                    {friendName &&
                                     <React.Fragment>
-                                        <h3 className="message">`Hello ${player.getName()}`</h3>
-                                        <h3 class="message">{messageWithFriendName}</h3>
+                                        <h3 className="message">Hello {player.getName()},</h3>
+                                        <h2 className="friend-name">{friendName}</h2>
+                                        <h3 className="message">{messagePart2}</h3>
                                     </React.Fragment>
                                     }
-                                    {!messageWithFriendName && (
+                                    {!friendName && (
                                         <React.Fragment>
                                             <h3 className="message-box--main--1">{`Hello ${player.getName()}, ${messagePart1}`}</h3>
                                             <h3 className="message-box--main--2"><b>{nameStartsWithRandom}</b></h3>
